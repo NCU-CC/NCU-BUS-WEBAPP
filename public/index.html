@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="public/lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="public/css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="public/lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <!--<script src="http://140.115.189.151/files/cordova.js"></script>-->
+	
+    <!-- your app's js -->
+	<script>
+        var module = angular.module('starter', ['ionic']);
+        module.value('accessToken', 'Your access token here');
+    </script>
+    <script src="public/js/app.js"></script>	
+  </head>
+  <body ng-app="starter" ng-controller="TodoCtrl">
+    <ion-side-menus is-enabled="false">
+		
+		<!-- Center content -->
+		<ion-side-menu-content>
+			
+			<ion-header-bar class="bar-dark">
+				<button class="button button-icon" ng-click="toggleProjects()">
+					<i class="icon ion-navicon"></i>
+				</button>
+				<h1 class="title" id="busTitle">{{busTitles[activeId]}}</h1>	
+			</ion-header-bar>
+			
+			<ion-content scroll="false">
+				<ion-slides  options="options" slider="data.slider">
+					<ion-slide-page ng-repeat="id in busIds">
+						<div style="background-color:white">
+						<ion-content scroll="false">
+							<ion-scroll zooming="false" direction="y" style="width: 100%; height: 99%">
+							
+					
+								<ion-refresher pulling-text="Pull to refresh..." on-refresh="refresh(activeId)">
+								</ion-refresher>
+					
+								<!-- our list and list items -->
+								<ion-list>
+									<ion-item ng-repeat="info in busInfos[activeId].BusDynInfo.BusInfo.Route.EstimateTime track by $index"
+											  ng-class="$index%2 == 1 ? 'dark' : ''">
+										<div class="row busInfoRow">
+											<div class="col col-25" style="text-align:center">{{info.comeTime}}</div>
+											<div class="col col-75" style="text-align:center">{{info.StopName}}</div>
+										</div>
+									</ion-item>
+									<ion-item ng-show="!busInfos[activeId].BusDynInfo.BusInfo.Route.EstimateTime" style="text-align:center">暫無資料
+									</ion-item>
+								</ion-list>
+					
+						
+							</ion-scroll>
+							</ion-content>
+						</div>
+					</ion-slide-page>
+                    
+                    <ion-slide-page>
+						<div style="background-color:white">
+						<ion-content scroll="false">
+							<ion-scroll zooming="false" direction="y" style="width: 100%; height: 99%">
+							
+								<!-- our list and list items -->
+								<ion-list>
+									<ion-item style="text-align:center"><a href='http://www.taiwanbus.tw/DyBus.aspx?Lang=&ID=8194#9025#1'>9025公車動態</a></ion-item>
+								</ion-list>
+					
+						
+							</ion-scroll>
+							</ion-content>
+						</div>
+					</ion-slide-page>
+                    
+				</ion-slides>					
+			</ion-content>
+			
+			<!-- Footer -->
+			<ion-footer-bar align-title="center" class="bar-light">
+				<div class="button-bar" style="margin: 0 auto;">
+					<button class="button button-light" ng-click="goToHSROW()">高鐵官網</button>
+					<button class="button button-light" ng-click="goToHSRAPP()">高鐵APP</button>
+					<button class="button button-light" ng-click="goToTROW()">台鐵官網</button>
+					<button class="button button-light" ng-click="goToTRAPP()">台鐵APP</button>
+				</div>
+			</ion-footer-bar>
+		</ion-side-menu-content>
+		
+		
+		
+		<!-- Left menu -->
+		<ion-side-menu side="left">
+			<ion-header-bar class="bar-dark">
+				<h1 class="title"></h1>
+			</ion-header-bar>
+			<ion-content>
+				<ion-list>
+					<ion-item ng-click="openTimeTable()">
+						時刻表
+					</ion-item>
+					<ion-item ng-click="openTerminalInfoModal()">
+						中壢總站資訊
+					</ion-item>
+					<ion-item ng-click="openInfoModal()">
+						關於
+					</ion-item>
+				</ion-list>
+			</ion-content>
+		</ion-side-menu>
+		
+	</ion-side-menus>
+	
+	
+	<!--Angular js custom template-->
+	
+	<script id="terminal-info.html" type="text/ng-template">
+		<div class="modal">
+			<!-- Modal header bar -->
+			<ion-header-bar class="bar-dark">
+				<h1 class="title">總站資訊</h1>
+				<button class="button button-icon" ng-click="closeTerminalInfoModal()">
+					<i class="icon ion-android-close"></i>
+				</button>
+			</ion-header-bar>
+
+			<!-- Modal content area -->
+			<ion-content>
+				<div class="card" style="box-shadow: none;">
+					<div class="item item-image">
+						<img src="public/img/terminus_information.gif">
+					</div>
+				</div>
+			</ion-content>
+		</div>
+	</script>
+
+	<script id="info.html" type="text/ng-template">
+		<div class="modal">
+			<!-- Modal header bar -->
+			<ion-header-bar class="bar-dark">
+				<h1 class="title">關於</h1>
+				<button class="button button-icon" ng-click="closeInfoModal()">
+					<i class="icon ion-android-close"></i>
+				</button>
+			</ion-header-bar>
+
+			<!-- Modal content area -->
+			<ion-content>
+				<div class="card" style="box-shadow: none;">
+					<div class="item item-text-wrap">
+						Version: v1.1<br>
+						License: MIT License<br>
+						Repository:
+						<a href="https://github.com/NCU-CC/NCU-BUS">
+						 https://github.com/NCU-CC/NCU-BUS</a><br>
+						Contributors: xxx663xxx(WebAPP)、邱義傑(API)<br>
+						Owner: 
+						<a href="http://www.cc.ncu.edu.tw/">
+						National Central University Computer Center</a><br>
+						Email: mobile@cc.ncu.edu.tw
+					</div>
+				</div>
+			</ion-content>
+			
+		</div>
+	</script>
+	
+  </body>
+</html>
