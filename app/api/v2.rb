@@ -21,7 +21,7 @@ module Bus
 			end
 		end
 		
-		rescue_from RuntimeError do |e|
+		rescue_from :all do |e|
 			V2.logger.error e
 			error! 'server_error', 500
 		end
