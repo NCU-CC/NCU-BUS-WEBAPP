@@ -8,5 +8,5 @@ module Bus
 		logger Logger.new GrapeLogging::MultiIO.new(STDERR, File.open(Settings::LOG_PATH, 'a'))
 		use GrapeLogging::Middleware::RequestLogger, { logger: logger }
 		mount Bus::V2 => '/bus/v2'
-    end
+	end
 end
