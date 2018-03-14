@@ -5,7 +5,7 @@ module Bus
 
 		helpers do
 
-			def getAccessToken (id , secret)
+			def getAccessToken
 				cache = JSON.parse(File.read(Settings::TMP_DIR + "/accessToken"))
 				cacheExpired = (cache['expires_in'] + cache['created_at'] - Time.new.to_i < 300)
 
@@ -13,13 +13,16 @@ module Bus
 					cache['access_token']
 					
 				else
+					authString = Settings::OAUTH_APP_ID + ':' + Settings::OAUTH_SECRET
+					authCode = Base64.strict_encode64(authString)
+
 					response = RestClient::Request.execute(
 						url: Settings::OAUTH_ACCESS_TOKEN_ENDPOINT,
 						method: :post,
 						payload: 'grant_type=client_credentials',
 						verify_ssl: false,
 						headers: {
-							Authorization: 'Basic ' + Base64.strict_encode64(Settings::OAUTH_APP_ID + ':' + Settings::OAUTH_SECRET)
+							Authorization: 'Basic ' + authCode
 						}
 					)
 
@@ -48,11 +51,12 @@ module Bus
 
 		content_type :html, "text/html; charset=utf-8"
 
-		get :index do
+		get '/' do
 			accessToken = getAccessToken()
 			header 'Content-Type', 'text/html; charset=UTF-8'
 			raw = File.read(Settings::STATIC_FILE_DIR + "/index.html")
 			raw = raw.gsub('Your access token here', accessToken)
+			raw = raw.gsub('Your api url here', Settings::API_URL)
 			ERB.new(raw).result(binding)
 		end
 
