@@ -11,6 +11,4 @@ use Rack::Cors do
   end
 end
 
-use Rack::Static, urls: ["/bus/v2/public"], root: "public"
-
 run Bus::API 
