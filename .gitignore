@@ -1,5 +1,5 @@
 Gemfile.lock
-
 db/seeds.rb
-
 [._]*.swp
+log
+.vscode

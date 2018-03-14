@@ -24,9 +24,10 @@ module.run(function($ionicPlatform) {
 })
 
 
-.controller('TodoCtrl', function($scope, $ionicModal, $ionicSideMenuDelegate, $ionicSlideBoxDelegate,  $ionicPopover, $http, accessToken) {
+.controller('TodoCtrl', function($scope, $ionicModal, $ionicSideMenuDelegate, $ionicSlideBoxDelegate,  $ionicPopover, $http, accessToken, apiUrl) {
 
-    $scope.accessToken = accessToken;
+	$scope.accessToken = accessToken;
+	$scope.apiUrl = apiUrl;
     
 	$scope.busTitle = document.getElementById("busTitle");
 	
@@ -55,19 +56,21 @@ module.run(function($ionicPlatform) {
 	$scope.activeId = 0; //Array index of currently active busInfo
 	$scope.busInfos = []; //Temporary space for busInfo
   
-	$scope.req = {
-		method: 'GET',
-		url: 'https://api.cc.ncu.edu.tw/bus_dev/v1/routes/133/estimate_times',
-		headers: {
-			'Content-Type': undefined,
-			'Authorization': 'Bearer' + $scope.accessToken
-		},	
-	}
+	$scope.req = function() {
+		return {
+			method: 'GET',
+			url: $scope.apiUrl + '/routes/133/estimate_times',
+			headers: {
+				'Content-Type': undefined,
+				'Authorization': 'Bearer' + $scope.accessToken
+			},	
+		};
+	};
     
     $scope.refreshAccessTkn = function(){
         req = {
             method: 'GET',
-            url: 'http://140.115.189.151:9494/bus/v2/accessToken'
+            url: '/accessToken'
         }
         $http(req).then(function(resp){
             $scope.accessToken = resp.data;
@@ -87,8 +90,8 @@ module.run(function($ionicPlatform) {
     };
   
 	$scope.refresh = function(infoId){
-		req = $scope.req
-		req.url = 'https://api.cc.ncu.edu.tw/bus_dev/v1/routes/' + $scope.busIds[infoId] + '/estimate_times';
+		req = $scope.req();
+		req.url = $scope.apiUrl + '/routes/' + $scope.busIds[infoId] + '/estimate_times';
 		$http(req).then(function(resp){
 			console.log('Success', resp); // JSON object
 			$scope.busInfos[infoId] = $scope.formatBusTime(resp.data);
@@ -103,8 +106,8 @@ module.run(function($ionicPlatform) {
     
 	$scope.getAllBusInfo = function(state){
 		if(state === -1){ //no bus info retrieved in this time slot yet.
-			req = $scope.req
-			req.url = 'https://api.cc.ncu.edu.tw/bus_dev/v1/routes/' + $scope.busIds[0] + '/estimate_times';
+			req = $scope.req();
+			req.url = $scope.apiUrl + '/routes/' + $scope.busIds[0] + '/estimate_times';
 			$http(req).then(function(resp){
 				console.log('Success, state: ' + state, resp); // JSON object
 				$scope.busInfos[0] = $scope.formatBusTime(resp.data);
@@ -118,8 +121,8 @@ module.run(function($ionicPlatform) {
 				}, 30*1000);
 			})
 		}else if(state < $scope.busIds.length){
-			req = $scope.req
-			req.url = 'https://api.cc.ncu.edu.tw/bus_dev/v1/routes/' + $scope.busIds[state] + '/estimate_times';
+			req = $scope.req()
+			req.url = $scope.apiUrl + '/routes/' + $scope.busIds[state] + '/estimate_times';
 			$http(req).then(function(resp){
 				$scope.busInfos[state] = $scope.formatBusTime(resp.data);
 				console.log('$scope.busInfos[state]', $scope.busInfos[state])
@@ -200,56 +203,56 @@ module.run(function($ionicPlatform) {
   
 	$scope.timeTable = [];
 	// Create and load time table Modals
-	$ionicModal.fromTemplateUrl('public/timetables/133timetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/133timetable.html', function(modal) {
 		$scope.timeTable[0] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/3220timetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/3220timetable.html', function(modal) {
 		$scope.timeTable[1] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/3221timetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/3221timetable.html', function(modal) {
 		$scope.timeTable[2] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/3222timetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/3222timetable.html', function(modal) {
 		$scope.timeTable[3] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/9025_Gotimetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/9025_Gotimetable.html', function(modal) {
 		$scope.timeTable[4] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/9025_Backtimetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/9025_Backtimetable.html', function(modal) {
 		$scope.timeTable[5] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/9025_Go_NCUtimetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/9025_Go_NCUtimetable.html', function(modal) {
 		$scope.timeTable[6] = modal;
 	}, {
 		scope: $scope,
 		animation: 'slide-in-up'
 	});
 	
-	$ionicModal.fromTemplateUrl('public/timetables/9025_Back_NCUtimetable.html', function(modal) {
+	$ionicModal.fromTemplateUrl('timetables/9025_Back_NCUtimetable.html', function(modal) {
 		$scope.timeTable[7] = modal;
 	}, {
 		scope: $scope,
